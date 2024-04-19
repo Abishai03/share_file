@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Text Box</title>
+    <style>
+        #textArea {
+            width: 100vw;
+            height: 100vh;
+            font-size: 16pt;
+        }
+    </style>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var socket = io();
+            var textarea = document.getElementById('textArea');
+
+            textarea.addEventListener('input', function () {
+                socket.emit('update text', { text: textarea.value });
+            });
+
+            socket.on('text updated', function (data) {
+                textarea.value = data.text;
+            });
+        });
+    </script>
+</head>
+<body>
+    <textarea id="textArea" placeholder="Start typing...">{{ text }}</textarea>
+</body>
+</html>
