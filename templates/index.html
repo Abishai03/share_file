@@ -5,8 +5,21 @@
     <style>
         #textArea {
             width: 100vw;
-            height: 100vh;
+            height: 90vh; /* Adjusted to make room for buttons */
             font-size: 16pt;
+        }
+        #controls {
+            width: 100vw;
+            height: 10vh; /* Space for buttons */
+            display: flex;
+            justify-content: flex-start; /* Align buttons to the left */
+            align-items: center;
+            gap: 10px; /* Adds space between buttons */
+        }
+        button {
+            font-size: 16pt;
+            padding: 10px;
+            cursor: pointer;
         }
     </style>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
@@ -14,6 +27,26 @@
         document.addEventListener('DOMContentLoaded', function () {
             var socket = io();
             var textarea = document.getElementById('textArea');
+
+            document.getElementById('clearAll').addEventListener('click', function() {
+                textarea.value = '';
+                socket.emit('update text', { text: textarea.value });
+            });
+
+            document.getElementById('copy').addEventListener('click', function() {
+                navigator.clipboard.writeText(textarea.value);
+            });
+
+            document.getElementById('paste').addEventListener('click', function() {
+                navigator.clipboard.readText().then(text => {
+                    if (textarea.value) {
+                        textarea.value += '\n' + text;
+                    } else {
+                        textarea.value = text;
+                    }
+                    socket.emit('update text', { text: textarea.value });
+                });
+            });
 
             textarea.addEventListener('input', function () {
                 socket.emit('update text', { text: textarea.value });
@@ -26,6 +59,11 @@
     </script>
 </head>
 <body>
+    <div id="controls">
+        <button id="clearAll">Clear All</button>
+        <button id="copy">Copy</button>
+        <button id="paste">Paste</button>
+    </div>
     <textarea id="textArea" placeholder="Start typing...">{{ text }}</textarea>
 </body>
 </html>

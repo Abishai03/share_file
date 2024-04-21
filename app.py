@@ -18,5 +18,11 @@ def handle_text(data):
     shared_text = data['text']
     emit('text updated', {'text': shared_text}, broadcast=True)
 
+@socketio.on('clear text')
+def handle_clear():
+    global shared_text
+    shared_text = ""  # Reset the shared text to empty
+    emit('text updated', {'text': shared_text}, broadcast=True)
+
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5010)
